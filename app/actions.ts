@@ -3,7 +3,7 @@
 import "server-only";
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
-import { Prisma } from "@prisma/client"; // Import Prisma types
+import { Prisma } from "@prisma/client/index"; // Import Prisma types
 
 export async function getLiveSignatures() {
   try {
