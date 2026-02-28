@@ -1,0 +1,24 @@
+generator client {
+  provider = "prisma-client-js"
+  engineType    = "binary"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+model Signature {
+  id           Int       @id @default(autoincrement()) @db.UnsignedInt
+  name         String    @db.VarChar(255)
+  email        String    @db.VarChar(255)
+  mobile       String    @db.VarChar(255)
+  idnumber     String    @db.VarChar(255)
+  county       String    @db.VarChar(255)
+  constituency String    @db.VarChar(255)
+  ward         String    @db.VarChar(255)
+  signature    String    @db.VarChar(255)
+  createdAt    DateTime? @map("created_at") @db.Timestamp(0)
+  updatedAt    DateTime? @updatedAt @map("updated_at") @db.Timestamp(0)
+
+  @@map("signatures")
+}
