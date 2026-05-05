@@ -1,28 +1,22 @@
-// auth.ts
 import NextAuth from "next-auth";
-import Credentials from "next-auth/providers/credentials";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "@/lib/prisma";
+import { authConfig } from "./auth.config"; // Import the base config
 import bcrypt from "bcryptjs";
+import Credentials from "next-auth/providers/credentials";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
+  ...authConfig, // Spread the base config
   adapter: PrismaAdapter(prisma),
-  // 1. MUST ADD THIS FOR VERCEL
-  trustHost: true, 
-  
-  // 2. EXPLICITLY LINK THE SECRET
+  session: { strategy: "jwt" },
+  trustHost: true,
   secret: process.env.AUTH_SECRET,
-
   providers: [
+    // Re-declare Credentials here WITH the authorize logic
     Credentials({
-      name: "Credentials",
-      credentials: {
-        email: { label: "Email", type: "email" },
-        password: { label: "Password", type: "password" },
-      },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) return null;
-
+        
         const user = await prisma.user.findUnique({
           where: { email: credentials.email as string },
         });
@@ -34,33 +28,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           user.password
         );
 
-        if (!isPasswordValid) return null;
-
-        return {
-          id: user.id.toString(), // Ensure ID is a string for NextAuth
-          email: user.email,
-          name: user.name,
-        };
+        return isPasswordValid ? { id: user.id.toString(), email: user.email, name: user.name } : null;
       },
     }),
   ],
-  session: { strategy: "jwt" },
-  pages: {
-    signIn: "/login",
-  },
-  // 3. ADD CALLBACKS TO ENSURE JWT IS PASSED PROPERLY
-  callbacks: {
-    async jwt({ token, user }) {
-      if (user) {
-        token.id = user.id;
-      }
-      return token;
-    },
-    async session({ session, token }) {
-      if (session.user) {
-        session.user.id = token.id as string;
-      }
-      return session;
-    },
-  },
 });
