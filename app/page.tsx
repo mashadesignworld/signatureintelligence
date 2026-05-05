@@ -7,9 +7,11 @@ import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { setSignatures, filterSignatures } from "@/lib/features/signatureSlice";
 import { 
   Search, Users, RefreshCcw, MapPin, 
-  Fingerprint, FileDown, Trash2, LogOut, ShieldCheck 
+  Fingerprint, FileDown, Trash2, LogOut, ShieldCheck,
+  BarChart3 // Added for the analytics icon
 } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link"; // Added for navigation
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { getLiveSignatures, deleteSignature } from "@/app/actions";
@@ -77,12 +79,24 @@ export default function Dashboard() {
       {/* Editorial Navigation Bar */}
       <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-slate-100 px-8 py-4">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
-          <div className="flex items-center gap-4">
-            <Image src="/logo.png" alt="Logo" width={45} height={45} className="rounded-full shadow-md" />
-            <div className="hidden md:block">
-              <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 leading-none mb-1">Internal Portal</p>
-              <p className="text-sm font-serif font-bold text-slate-900">FreeKenya Movement</p>
+          <div className="flex items-center gap-8">
+            <div className="flex items-center gap-4">
+              <Image src="/logo.png" alt="Logo" width={45} height={45} className="rounded-full shadow-md" />
+              <div className="hidden md:block">
+                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 leading-none mb-1">Internal Portal</p>
+                <p className="text-sm font-serif font-bold text-slate-900">FreeKenya Movement</p>
+              </div>
             </div>
+
+            {/* --- NEW: Navigation Tabs --- */}
+            <nav className="hidden md:flex items-center gap-6 border-l border-slate-100 pl-8">
+              <Link href="/dashboard" className="text-[10px] font-black uppercase tracking-widest text-slate-900 border-b-2 border-slate-900 pb-1">
+                Registry
+              </Link>
+              <Link href="/dashboard/analytics" className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-slate-900 transition-colors pb-1">
+                Analytics
+              </Link>
+            </nav>
           </div>
 
           <div className="flex items-center gap-6">
@@ -117,17 +131,29 @@ export default function Dashboard() {
             </p>
           </div>
 
-          <div className="bg-white border border-slate-100 shadow-2xl shadow-slate-100 px-10 py-6 rounded-[2.5rem] flex items-center gap-6">
-            <div className="bg-slate-50 p-4 rounded-3xl">
+          {/* --- UPDATED: Clickable Metric Card --- */}
+          <div className="bg-white border border-slate-100 shadow-2xl shadow-slate-100 px-10 py-6 rounded-[2.5rem] flex items-center gap-6 relative group">
+            <div className="bg-slate-50 p-4 rounded-3xl transition-colors group-hover:bg-slate-100">
               <Users size={28} className="text-slate-900" />
             </div>
             <div>
               <p className="text-[10px] uppercase font-black text-slate-400 tracking-[0.2em] mb-1">Signature Count</p>
               <p className="text-4xl font-serif font-black text-slate-900 leading-none">{totalCount.toLocaleString()}</p>
             </div>
+            
+            {/* Hover tooltip link */}
+            <Link 
+              href="/dashboard/analytics" 
+              className="absolute -bottom-4 right-10 bg-emerald-600 text-white text-[9px] font-black uppercase tracking-widest px-4 py-2 rounded-full shadow-lg shadow-emerald-200 opacity-0 group-hover:opacity-100 transition-all transform translate-y-2 group-hover:translate-y-0 flex items-center gap-2"
+            >
+              <BarChart3 size={12} />
+              View Insights
+            </Link>
           </div>
         </header>
 
+        {/* ... (Keep your existing Action Bar and Grid code here) ... */}
+        
         {/* High-End Action Bar */}
         <div className="flex flex-col lg:flex-row gap-6 mb-12">
           <div className="relative flex-grow">

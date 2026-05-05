@@ -11,9 +11,12 @@
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.2",
+    "@headlessui/react": "^2.2.10",
+    "@heroicons/react": "^2.2.0",
     "@prisma/adapter-mariadb": "^7.4.2",
     "@prisma/client": "^7.4.1",
     "@reduxjs/toolkit": "^2.11.2",
+    "@tremor/react": "^3.18.7",
     "bcryptjs": "^3.0.3",
     "jspdf": "^4.2.0",
     "jspdf-autotable": "^5.0.7",
