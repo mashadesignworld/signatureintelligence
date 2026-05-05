@@ -7,6 +7,12 @@ import bcrypt from "bcryptjs";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma),
+  // 1. MUST ADD THIS FOR VERCEL
+  trustHost: true, 
+  
+  // 2. EXPLICITLY LINK THE SECRET
+  secret: process.env.AUTH_SECRET,
+
   providers: [
     Credentials({
       name: "Credentials",
@@ -17,15 +23,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) return null;
 
-        // Prisma looks at the 'dashboard_admins' table because of your @@map
         const user = await prisma.user.findUnique({
           where: { email: credentials.email as string },
         });
 
-        // If no user found or password field is empty (safety check)
         if (!user || !user.password) return null;
 
-        // Compare the plain text password with the hashed one in MariaDB
         const isPasswordValid = await bcrypt.compare(
           credentials.password as string,
           user.password
@@ -34,17 +37,30 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         if (!isPasswordValid) return null;
 
         return {
-          id: user.id,
+          id: user.id.toString(), // Ensure ID is a string for NextAuth
           email: user.email,
           name: user.name,
         };
       },
     }),
   ],
-  // Use JWT because Prisma adapters with MariaDB can sometimes be 
-  // finicky with session persistence in serverless environments
   session: { strategy: "jwt" },
   pages: {
-    signIn: "/login", // Custom login page route
+    signIn: "/login",
+  },
+  // 3. ADD CALLBACKS TO ENSURE JWT IS PASSED PROPERLY
+  callbacks: {
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      if (session.user) {
+        session.user.id = token.id as string;
+      }
+      return session;
+    },
   },
 });
