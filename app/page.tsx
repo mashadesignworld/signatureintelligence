@@ -90,7 +90,7 @@ export default function Dashboard() {
 
             {/* --- NEW: Navigation Tabs --- */}
             <nav className="hidden md:flex items-center gap-6 border-l border-slate-100 pl-8">
-              <Link href="/dashboard" className="text-[10px] font-black uppercase tracking-widest text-slate-900 border-b-2 border-slate-900 pb-1">
+              <Link href="/" className="text-[10px] font-black uppercase tracking-widest text-slate-900 border-b-2 border-slate-900 pb-1">
                 Registry
               </Link>
               <Link href="/dashboard/analytics" className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-slate-900 transition-colors pb-1">
